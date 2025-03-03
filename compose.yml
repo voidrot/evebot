@@ -1,0 +1,80 @@
+services:
+  django: &django
+    image: git.homelab.monster/buck/evebot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - app_data:/data
+    depends_on:
+      - database
+      - valkey
+      - mailpit
+    environment:
+      DEBUG: True
+    env_file: .env.compose
+
+  database:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    env_file: .env.compose
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  valkey:
+    image: valkey/valkey:latest
+    environment:
+      VALKEY_EXTRA_FLAGS: '--save 60 1 --loglevel warning'
+    ports:
+      - 6379:6379
+    volumes:
+      - valkey_data:/data
+
+  mailpit:
+    image: docker.io/axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    env_file: .env.compose
+
+  celeryworker:
+    <<: *django
+    depends_on:
+      - valkey
+      - database
+      - mailpit
+    ports: []
+    command: worker
+
+  celerybeat:
+    <<: *django
+    depends_on:
+      - valkey
+      - database
+      - mailpit
+    ports: []
+    command: beat
+
+  flower:
+    <<: *django
+    ports:
+      - '5555:5555'
+    command: 'flower'
+
+
+
+
+volumes:
+  app_data:
+  database_data:
+  valkey_data:
