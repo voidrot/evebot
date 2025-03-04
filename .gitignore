@@ -539,5 +539,5 @@ $RECYCLE.BIN/
 !.env*.example
 
 
-sde-workspace
+.sde-workspace
 sql.workspace

@@ -11,25 +11,30 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import environ
 
+import colorlog
+import environ
+from pygments.lexer import default
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-env.read_env(str(BASE_DIR / '.env'))
+env.read_env(str(BASE_DIR / ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-&ke0#7_t$2i5&w_9y-p@vyd_lx@3v%j&h*%ba(9jmx4n%)44gc"
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-&ke0#7_t$2i5&w_9y-p@vyd_lx@3v%j&h*%ba(9jmx4n%)44gc",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DJANGO_DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -41,7 +46,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_cotton",
+    "debug_toolbar",
     "sde.apps.SdeConfig",
+    "esi",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "evebot.urls"
@@ -79,14 +88,20 @@ WSGI_APPLICATION = "evebot.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres://evebot:evebot@localhost:5432/evebot'),
+    "default": env.db(
+        "DATABASE_URL", default="postgres://evebot:evebot@localhost:5432/evebot"
+    ),
 }
-DATABASES['default']['ATOMIC_REQUESTS'] = True
-DATABASES['default']['OPTIONS'] = {
-    'pool': True
-}
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]["OPTIONS"] = {"pool": True}
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("VALKEY_URL", default="redis://127.0.0.1:6379"),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -127,4 +142,45 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+if DEBUG:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "prod": {
+                # TODO: Update this to be helpful once deployed
+                "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
+            },
+            "dev": {
+                "()": colorlog.ColoredFormatter,
+                "format": "%(log_color)s%(levelname)s: %(message)s",
+                "log_colors": {
+                    "DEBUG": "cyan",
+                    "INFO": "green",
+                    "WARNING": "yellow",
+                    "ERROR": "red",
+                    "CRITICAL": "red,bg_white",
+                },
+            },
+        },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": env("DJANGO_LOG_FORMAT", default="prod"),
+            },
+        },
+        "root": {
+            "handlers": ["console"],
+            "level": env("DJANGO_LOG_LEVEL", default="WARNING"),
+        },
+    }
+
+
+INTERNAL_IPS = ["127.0.0.1"]
+
+ESI_SSO_CLIENT_ID = env("ESI_SSO_CLIENT_ID")
+ESI_SSO_CLIENT_SECRET = env("ESI_SSO_CLIENT_SECRET")
+ESI_SSO_CALLBACK_URL = env("ESI_SSO_CALLBACK_URL")
+ESI_USER_CONTACT_EMAIL = "bbrady145@gmail.com; eve:Anubis Assassin; discord:kalstir"
