@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Station(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=90)
@@ -14,10 +15,8 @@ class Station(models.Model):
     reprocessing_efficiency = models.FloatField()
     reprocessing_hanger_flag = models.IntegerField()
     reprocessing_stations_take = models.FloatField()
-    security = models.DecimalField(max_digits=1, decimal_places=18)
+    security = models.FloatField()
     solar_system_id = models.IntegerField()
     x = models.FloatField()
     y = models.FloatField()
     z = models.FloatField()
-
-

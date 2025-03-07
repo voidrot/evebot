@@ -176,7 +176,6 @@ class Command(BaseCommand):
             }
         return uniq_names_obj
 
-
     async def _load_async_tasks(self):
         async with asyncio.TaskGroup() as tg:
             tg.create_task(self._load_agents())

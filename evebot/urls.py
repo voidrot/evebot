@@ -17,10 +17,12 @@ Including another URLconf
 
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include, re_path
 from django.conf import settings
 
 urlpatterns = [
+    # path("sitemap.xml", sitemap, {"sitemaps": sitemap}, name="django.contrib.sitemaps.views.sitemap"),
     path("admin/", admin.site.urls),
     re_path(r"^sso/", include("esi.urls", namespace="esi")),
 ] + debug_toolbar_urls()
