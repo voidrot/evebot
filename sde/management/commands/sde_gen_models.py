@@ -101,11 +101,15 @@ class Command(BaseCommand):
 
     def _convert_to_snake_case(self, name):
         """Convert a string to snake_case."""
+        if isinstance(name, int):
+            return name
         s = re.sub(r"([a-z])([A-Z])", r"\1_\2", name)
         return s.lower()
 
     def _convert_to_pascel_case(self, name):
         """Convert a string to PascalCase."""
+        if isinstance(name, int):
+            return name
         return "".join(word.title() for word in name.split("_"))
 
     def _load_yaml(self, p: Path):
@@ -158,10 +162,6 @@ class Command(BaseCommand):
         fields = {}
         field_types = {}
         field_found = {}
-
-
-
-
 
         for item in yaml_data:
             print(f"item: {item}")

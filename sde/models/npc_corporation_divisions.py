@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class NpcCorporationDivision(models.Model):
+class NPCCorporationDivision(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField(default=None)
     internal_name = models.TextField()

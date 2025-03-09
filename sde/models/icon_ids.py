@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class IconId(models.Model):
+class IconID(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField(default=None)
     icon_file = models.TextField()

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class AgentsInSpace(models.Model):
+class AgentInSpace(models.Model):
     id = models.IntegerField(primary_key=True)
     dungeon_id = models.IntegerField()
     solar_system_id = models.IntegerField()

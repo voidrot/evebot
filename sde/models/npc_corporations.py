@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class NpcCorporation(models.Model):
+class NPCCorporation(models.Model):
     id = models.IntegerField(primary_key=True)
     ceo_id = models.IntegerField(default=None, null=True, blank=True)
     deleted = models.BooleanField()

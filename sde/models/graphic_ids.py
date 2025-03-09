@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class GraphicId(models.Model):
+class GraphicID(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField(default=None)
     graphic_file = models.TextField(default=None)

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class StaStation(models.Model):
+class Station(models.Model):
     id = models.IntegerField(primary_key=True)
     constellation_id = models.IntegerField()
     corporation_id = models.IntegerField()
