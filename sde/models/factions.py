@@ -17,4 +17,4 @@ class Faction(models.Model):
     unique_name = models.BooleanField()
 
     def __str__(self):
-        return f"{self.name_id["en"]}"
+        return f"{self.name_id['en']}"

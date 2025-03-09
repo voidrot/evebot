@@ -191,7 +191,9 @@ class Command(BaseCommand):
         fields["id"] = "models.IntegerField(primary_key=True)"
         for field_name, field_values in field_types.items():
             is_optional = len(yaml_data) != field_found[field_name]
-            print(f"optional: {is_optional} | {field_name}: {field_found[field_name]} vs {len(yaml_data)}")
+            print(
+                f"optional: {is_optional} | {field_name}: {field_found[field_name]} vs {len(yaml_data)}"
+            )
             fields[field_name] = self._get_field_type(
                 field_values[0], optional=is_optional
             )

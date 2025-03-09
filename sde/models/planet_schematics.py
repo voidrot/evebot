@@ -9,4 +9,4 @@ class PlanetSchematic(models.Model):
     types = models.JSONField()
 
     def __str__(self):
-        return f"{self.name_id["en"]}"
+        return f"{self.name_id['en']}"

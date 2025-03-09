@@ -20,15 +20,23 @@ class DogmaEffect(models.Model):
     distribution = models.IntegerField(default=None, null=True, blank=True)
     falloff_attribute_id = models.IntegerField(default=None, null=True, blank=True)
     range_attribute_id = models.IntegerField(default=None, null=True, blank=True)
-    tracking_speed_attribute_id = models.IntegerField(default=None, null=True, blank=True)
+    tracking_speed_attribute_id = models.IntegerField(
+        default=None, null=True, blank=True
+    )
     description_id = models.JSONField(default=dict, null=True, blank=True)
     display_name_id = models.JSONField(default=dict, null=True, blank=True)
     icon_id = models.IntegerField(default=None, null=True, blank=True)
     modifier_info = models.JSONField(default=list, null=True, blank=True)
     sfx_name = models.TextField(default=None)
-    npc_usage_chance_attribute_id = models.IntegerField(default=None, null=True, blank=True)
-    npc_activation_chance_attribute_id = models.IntegerField(default=None, null=True, blank=True)
-    fitting_usage_chance_attribute_id = models.IntegerField(default=None, null=True, blank=True)
+    npc_usage_chance_attribute_id = models.IntegerField(
+        default=None, null=True, blank=True
+    )
+    npc_activation_chance_attribute_id = models.IntegerField(
+        default=None, null=True, blank=True
+    )
+    fitting_usage_chance_attribute_id = models.IntegerField(
+        default=None, null=True, blank=True
+    )
     resistance_attribute_id = models.IntegerField(default=None, null=True, blank=True)
 
     def __str__(self):

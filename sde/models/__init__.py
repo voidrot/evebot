@@ -39,7 +39,7 @@ from .research_agents import ResearchAgent
 from .skin_licenses import SkinLicense
 from .skin_materials import SkinMaterial
 from .skins import Skin
-from .solarsystems import SolarSystem
+from .solar_systems import SolarSystem
 from .sovereignty_upgrades import SovereigntyUpgrade
 from .sta_stations import Station
 from .station_operations import StationOperation
@@ -47,3 +47,55 @@ from .station_services import StationService
 from .type_dogma import TypeDogma
 from .type_materials import TypeMaterial
 from .types import Type
+
+__all__ = [
+    "Agent",
+    "AgentInSpace",
+    "Ancestry",
+    "AsteroidBelt",
+    "Bloodline",
+    "Blueprint",
+    "Category",
+    "Certificate",
+    "CharacterAttribute",
+    "Constellation",
+    "ContrabandType",
+    "ControlTowerResource",
+    "CorporationActivity",
+    "DogmaAttribute",
+    "DogmaAttributeCategory",
+    "DogmaEffect",
+    "Faction",
+    "GraphicID",
+    "Group",
+    "IconID",
+    "InvFlag",
+    "InvItem",
+    "InvName",
+    "InvPosition",
+    "InvUniqueName",
+    "Landmark",
+    "MarketGroup",
+    "MetaGroup",
+    "Moon",
+    "NPCCorporation",
+    "NPCCorporationDivision",
+    "PackagedVolume",
+    "Planet",
+    "PlanetResource",
+    "PlanetSchematic",
+    "Race",
+    "Region",
+    "ResearchAgent",
+    "Skin",
+    "SkinLicense",
+    "SkinMaterial",
+    "SolarSystem",
+    "SovereigntyUpgrade",
+    "Station",
+    "StationOperation",
+    "StationService",
+    "Type",
+    "TypeDogma",
+    "TypeMaterial",
+]

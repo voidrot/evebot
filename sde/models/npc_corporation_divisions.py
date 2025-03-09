@@ -10,4 +10,4 @@ class NPCCorporationDivision(models.Model):
     description_id = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name_id["en"]}"
+        return f"{self.name_id['en']}"

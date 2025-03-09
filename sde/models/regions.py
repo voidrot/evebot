@@ -13,4 +13,4 @@ class Region(models.Model):
     region_id = models.IntegerField()
 
     def __str__(self):
-        return f"{self.name_id["en"]}"
+        return f"{self.name_id['en']}"

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class AsteroidBelt(models.Model):
     id = models.IntegerField(primary_key=True)
     planet_id = models.IntegerField()

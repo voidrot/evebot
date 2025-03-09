@@ -39,4 +39,4 @@ class NPCCorporation(models.Model):
     url = models.TextField(default=None)
 
     def __str__(self):
-        return f"{self.name_id["en"]}"
+        return f"{self.name_id['en']}"

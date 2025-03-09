@@ -12,14 +12,12 @@ class SolarSystem(models.Model):
     luminosity = models.FloatField()
     max = models.JSONField()
     min = models.JSONField()
-    # planets = models.JSONField()
     radius = models.FloatField()
     regional = models.BooleanField()
     security = models.FloatField()
     solar_system_id = models.IntegerField()
     solar_system_name_id = models.IntegerField()
     star_id = models.IntegerField()
-    # stargates = models.JSONField()
     sun_type_id = models.IntegerField()
 
     def __str__(self):

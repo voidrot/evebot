@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Planet(models.Model):
     id = models.IntegerField(primary_key=True)
     celestial_index = models.IntegerField()

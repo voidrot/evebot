@@ -6,4 +6,4 @@ class CorporationActivity(models.Model):
     name_id = models.JSONField()
 
     def __str__(self):
-        return f"{self.name_id["en"]}"
+        return f"{self.name_id['en']}"
