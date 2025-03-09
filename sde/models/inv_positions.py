@@ -1,11 +1,15 @@
 from django.db import models
 
 
-class Position(models.Model):
-    item_id = models.IntegerField(primary_key=True)
-    pitch = models.FloatField()
-    roll = models.FloatField()
+class InvPosition(models.Model):
+    id = models.IntegerField(primary_key=True)
+    item_id = models.IntegerField()
+    pitch = models.FloatField(default=None, null=True, blank=True)
+    roll = models.FloatField(default=None, null=True, blank=True)
     x = models.FloatField()
     y = models.FloatField()
+    yaw = models.FloatField(default=None, null=True, blank=True)
     z = models.FloatField()
-    yaw = models.FloatField()
+
+    def __str__(self):
+        return f"{self.id}"

@@ -1,7 +1,11 @@
 from django.db import models
 
 
-class UniqueName(models.Model):
+class InvUniqueName(models.Model):
     id = models.IntegerField(primary_key=True)
     group_id = models.IntegerField()
-    name = models.CharField(max_length=100)
+    item_id = models.IntegerField()
+    item_name = models.TextField()
+
+    def __str__(self):
+        return f"{self.id}"

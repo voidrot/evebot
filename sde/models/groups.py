@@ -3,11 +3,14 @@ from django.db import models
 
 class Group(models.Model):
     id = models.IntegerField(primary_key=True)
-    name = models.TextField()
-    anchorable = models.BooleanField(default=False)
-    anchored = models.BooleanField(default=False)
+    anchorable = models.BooleanField()
+    anchored = models.BooleanField()
     category_id = models.IntegerField()
-    fittable_non_singleton = models.BooleanField(default=False)
-    icon_id = models.IntegerField()
-    use_base_price = models.BooleanField(default=False)
-    published = models.BooleanField(default=False)
+    fittable_non_singleton = models.BooleanField()
+    name = models.JSONField()
+    published = models.BooleanField()
+    use_base_price = models.BooleanField()
+    icon_id = models.IntegerField(default=None, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.id}"

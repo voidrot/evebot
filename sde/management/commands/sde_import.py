@@ -139,7 +139,7 @@ class Command(BaseCommand):
     def _load_yaml(self, p: Path):
         logger.debug(f"parsing yaml file at {str(p.absolute().resolve())}")
         with p.open("r") as t:
-            return yaml.load(t.read(), Loader=Loader)
+            return yaml.safe_load(t.read(), Loader=Loader)
 
     def load_sde_to_database(self):
         loop = asyncio.get_event_loop()

@@ -1,8 +1,12 @@
 from django.db import models
 
 
-class Flag(models.Model):
+class InvFlag(models.Model):
     id = models.IntegerField(primary_key=True)
-    name = models.TextField(max_length=50)
-    name_long = models.CharField(max_length=85)
+    flag_id = models.IntegerField()
+    flag_name = models.TextField()
+    flag_text = models.TextField()
     order_id = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.id}"

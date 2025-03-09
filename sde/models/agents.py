@@ -9,3 +9,6 @@ class Agent(models.Model):
     is_locator = models.BooleanField()
     level = models.IntegerField()
     location_id = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.id}"
