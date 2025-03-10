@@ -10,7 +10,7 @@ class DogmaEffect(models.Model):
     effect_id = models.IntegerField()
     effect_name = models.TextField()
     electronic_chance = models.BooleanField()
-    guid = models.TextField(default=None)
+    guid = models.TextField(null=True, default=None)
     is_assistance = models.BooleanField()
     is_offensive = models.BooleanField()
     is_warp_safe = models.BooleanField()
@@ -27,7 +27,7 @@ class DogmaEffect(models.Model):
     display_name_id = models.JSONField(default=dict, null=True, blank=True)
     icon_id = models.IntegerField(default=None, null=True, blank=True)
     modifier_info = models.JSONField(default=list, null=True, blank=True)
-    sfx_name = models.TextField(default=None)
+    sfx_name = models.TextField(null=True, default=None)
     npc_usage_chance_attribute_id = models.IntegerField(
         default=None, null=True, blank=True
     )

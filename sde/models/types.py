@@ -15,7 +15,7 @@ class Type(models.Model):
     sound_id = models.IntegerField(default=None, null=True, blank=True)
     icon_id = models.IntegerField(default=None, null=True, blank=True)
     race_id = models.IntegerField(default=None, null=True, blank=True)
-    sof_faction_name = models.TextField(default=None)
+    sof_faction_name = models.TextField(null=True, default=None)
     base_price = models.FloatField(default=None, null=True, blank=True)
     market_group_id = models.IntegerField(default=None, null=True, blank=True)
     capacity = models.FloatField(default=None, null=True, blank=True)

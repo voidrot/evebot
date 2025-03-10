@@ -11,7 +11,7 @@ class Skin(models.Model):
     visible_serenity = models.BooleanField()
     visible_tranquility = models.BooleanField()
     is_structure_skin = models.BooleanField(default=False, null=True, blank=True)
-    skin_description = models.TextField(default=None)
+    skin_description = models.TextField(null=True, default=None)
 
     def __str__(self):
         return f"{self.id}"

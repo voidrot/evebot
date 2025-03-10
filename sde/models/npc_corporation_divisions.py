@@ -3,7 +3,7 @@ from django.db import models
 
 class NPCCorporationDivision(models.Model):
     id = models.IntegerField(primary_key=True)
-    description = models.TextField(default=None)
+    description = models.TextField(null=True, default=None)
     internal_name = models.TextField()
     leader_type_name_id = models.JSONField()
     name_id = models.JSONField()

@@ -2,6 +2,31 @@ version = 1
 requires-python = ">=3.13"
 
 [[package]]
+name = "aiofile"
+version = "3.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "caio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/67/e2/d7cb819de8df6b5c1968a2756c3cb4122d4fa2b8fc768b53b7c9e5edb646/aiofile-3.9.0.tar.gz", hash = "sha256:e5ad718bb148b265b6df1b3752c4d1d83024b93da9bd599df74b9d9ffcf7919b", size = 17943 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/25/da1f0b4dd970e52bf5a36c204c107e11a0c6d3ed195eba0bfbc664c312b2/aiofile-3.9.0-py3-none-any.whl", hash = "sha256:ce2f6c1571538cbdfa0143b04e16b208ecb0e9cb4148e528af8a640ed51cc8aa", size = 19539 },
+]
+
+[[package]]
+name = "aiopath"
+version = "0.7.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiofile" },
+    { name = "anyio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a4/6f/b377e3eb293feb57e457b33961004cc3716794ef97428d2ae2a326599b1c/aiopath-0.7.7.tar.gz", hash = "sha256:ad4b9d09ae08ddf6d39dd06e7b0a353939e89528da571c0cd4f3fe071aefad4f", size = 16925 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/df/6a3826363e4848ffa8972410ab5234d3802597ae92f4a6397600149112c7/aiopath-0.7.7-py2.py3-none-any.whl", hash = "sha256:cd5d18de8ede167e1db659f02ee448fe085f923cb8e194407ccc568bffc4fe4e", size = 12200 },
+]
+
+[[package]]
 name = "amqp"
 version = "5.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -219,6 +244,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/af/85/a94e5cfaa0ca449d8f91c3d6f78313ebf919a0dbd55a100c711c6e9655bc/Brotli-1.1.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:832436e59afb93e1836081a20f324cb185836c617659b07b129141a8426973c7", size = 2930206 },
     { url = "https://files.pythonhosted.org/packages/c2/f0/a61d9262cd01351df22e57ad7c34f66794709acab13f34be2675f45bf89d/Brotli-1.1.0-cp313-cp313-win32.whl", hash = "sha256:43395e90523f9c23a3d5bdf004733246fba087f2948f87ab28015f12359ca6a0", size = 333804 },
     { url = "https://files.pythonhosted.org/packages/7e/c1/ec214e9c94000d1c1974ec67ced1c970c148aa6b8d8373066123fc3dbf06/Brotli-1.1.0-cp313-cp313-win_amd64.whl", hash = "sha256:9011560a466d2eb3f5a6e4929cf4a09be405c64154e12df0dd72713f6500e32b", size = 358517 },
+]
+
+[[package]]
+name = "caio"
+version = "0.9.21"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/ec/85a997230d9681a1d5154bba250cd26133fb79915bfe2c661c7529592503/caio-0.9.21.tar.gz", hash = "sha256:4f1d30ad0f975de07b4a3ae1cd2e9275fa574f2ca0b49ba5ab16208575650a92", size = 26882 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/42/a7e241569d027d1d8f80ffe2c527c7109dad90d4db9f91f11f79e5738e34/caio-0.9.21-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:de5a805bb646ce687ae7ffd5288d167ab306bef83af15771bd53681b98c46b90", size = 42463 },
+    { url = "https://files.pythonhosted.org/packages/84/56/ab7433ecdec3ef29a894c439fe5571dbdbbeece6051bea6a84f249d9d61d/caio-0.9.21-cp313-cp313-manylinux_2_34_aarch64.whl", hash = "sha256:1819f4b8ca13f8f24350aa4ada40e5632abb595adf4f3a67babb695916fbb4c8", size = 81362 },
+    { url = "https://files.pythonhosted.org/packages/af/9f/c2015ce24f2b6fd82a1fbec7aec1817cdc18ccbbd27efa80e0b964a6765c/caio-0.9.21-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:56073b55bf37ec687ae4036b9fd1da365116627cc637f878006e984812270eac", size = 80040 },
 ]
 
 [[package]]
@@ -814,6 +850,7 @@ name = "evebot"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "aiopath" },
     { name = "argon2-cffi" },
     { name = "bcrypt" },
     { name = "brotli" },
@@ -846,6 +883,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "redis" },
     { name = "sentry-sdk" },
+    { name = "tqdm" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "uvicorn-worker" },
     { name = "whitenoise" },
@@ -876,6 +914,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiopath", specifier = ">=0.7.7" },
     { name = "argon2-cffi", specifier = ">=23.1.0" },
     { name = "bcrypt", specifier = ">=4.3.0" },
     { name = "brotli", specifier = ">=1.1.0" },
@@ -908,6 +947,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "redis", specifier = ">=5.2.1" },
     { name = "sentry-sdk", specifier = ">=2.22.0" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0" },
     { name = "uvicorn-worker", specifier = ">=0.3.0" },
     { name = "whitenoise", specifier = ">=6.9.0" },

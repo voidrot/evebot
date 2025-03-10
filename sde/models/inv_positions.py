@@ -3,7 +3,6 @@ from django.db import models
 
 class InvPosition(models.Model):
     id = models.IntegerField(primary_key=True)
-    item_id = models.IntegerField()
     pitch = models.FloatField(default=None, null=True, blank=True)
     roll = models.FloatField(default=None, null=True, blank=True)
     x = models.FloatField()

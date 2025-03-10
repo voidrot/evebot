@@ -15,7 +15,7 @@ class NPCCorporation(models.Model):
     name_id = models.JSONField()
     public_shares = models.IntegerField()
     send_char_termination_message = models.BooleanField()
-    shares = models.IntegerField()
+    shares = models.BigIntegerField()
     size = models.TextField()
     station_id = models.IntegerField(default=None, null=True, blank=True)
     tax_rate = models.FloatField()
@@ -36,7 +36,7 @@ class NPCCorporation(models.Model):
     solar_system_id = models.IntegerField(default=None, null=True, blank=True)
     exchange_rates = models.JSONField(default=dict, null=True, blank=True)
     secondary_activity_id = models.IntegerField(default=None, null=True, blank=True)
-    url = models.TextField(default=None)
+    url = models.TextField(null=True, default=None)
 
     def __str__(self):
         return f"{self.name_id['en']}"
