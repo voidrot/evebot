@@ -94,10 +94,12 @@ DATABASES = {
     ),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
-DATABASES["default"]["OPTIONS"] = {"pool": {
-    "min_size": 10,
-    "max_size": 50,
-}}
+DATABASES["default"]["OPTIONS"] = {
+    "pool": {
+        "min_size": 10,
+        "max_size": 50,
+    }
+}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES = {

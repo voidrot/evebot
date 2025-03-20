@@ -258,7 +258,6 @@ class Command(BaseCommand):
 
         pass
 
-
     async def _load_inv_flags(self):
         logger.info("Loading invFlags data to model")
         inv_flags = self._load_yaml(self.sde_workspace / "bsd" / "invFlags.yaml")
@@ -1043,7 +1042,9 @@ class Command(BaseCommand):
 
     async def _load_type_materials(self):
         logger.info("Loading type materials data to model")
-        type_materials = self._load_yaml(self.sde_workspace / "fsd" / "typeMaterials.yaml")
+        type_materials = self._load_yaml(
+            self.sde_workspace / "fsd" / "typeMaterials.yaml"
+        )
         async with asyncio.TaskGroup() as tg:
             for k, v in type_materials.items():
                 type_material = TypeMaterial(
@@ -1072,7 +1073,7 @@ class Command(BaseCommand):
                     sound_id=v.get("soundID", None),
                     icon_id=v.get("iconID", None),
                     race_id=v.get("raceID", None),
-                    sof_faction_name = v.get("sofFactionName", None),
+                    sof_faction_name=v.get("sofFactionName", None),
                     base_price=v.get("basePrice", None),
                     market_group_id=v.get("marketGroupID", None),
                     capacity=v.get("capacity", None),
@@ -1086,11 +1087,14 @@ class Command(BaseCommand):
                 tg.create_task(type_.asave())
         logger.info("Finished loading types data to model")
 
-
     def _load_universe(self):
         logger.info("Loading universe data to models")
         universe_base_path = Path(self.sde_workspace / "universe")
-        archetypes = [a for a in universe_base_path.glob("*") if a.is_dir() and a.name != "landmarks"]
+        archetypes = [
+            a
+            for a in universe_base_path.glob("*")
+            if a.is_dir() and a.name != "landmarks"
+        ]
         for at in archetypes:
             # print(str(at))
             archetype = at.name
@@ -1309,8 +1313,3 @@ class Command(BaseCommand):
 
     def _load_hl_type_materials(self):
         pass
-
-
-
-
-

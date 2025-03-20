@@ -23,6 +23,5 @@ class SolarSystem(models.Model):
     secondary_sun = models.JSONField(default=dict, null=True)
     archetype = models.TextField()
 
-
     def __str__(self):
         return f"{self.id}"

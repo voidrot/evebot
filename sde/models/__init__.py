@@ -101,5 +101,5 @@ __all__ = [
     "Type",
     "TypeDogma",
     "TypeMaterial",
-    "Stargate"
+    "Stargate",
 ]
