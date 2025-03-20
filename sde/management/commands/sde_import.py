@@ -224,7 +224,7 @@ class Command(BaseCommand):
         start = time.monotonic()
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self._load_async_tasks())
-        # self._load_universe()
+        self._load_universe()
         self._load_hoboleaks()
         logger.info(
             f"Finished loading SDE to database in {time.monotonic() - start:.2f} seconds"
