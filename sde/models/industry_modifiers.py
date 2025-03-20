@@ -10,4 +10,5 @@ class IndustryModifier(models.Model):
     copying = models.JSONField(default=dict, null=True, blank=True)
     reaction = models.JSONField(default=dict, null=True, blank=True)
 
-
+    def __str__(self):
+        return f"{self.id}"

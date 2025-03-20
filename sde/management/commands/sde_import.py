@@ -4,20 +4,14 @@ import hashlib
 import logging
 import shutil
 import time
-from typing import Optional
 import zipfile
-from asyncio import sleep
 from pathlib import Path
-from pprint import pprint
+from typing import Optional
 
 import environ
 import httpx
 import yaml
-from aiopath import AsyncPath
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from tqdm.asyncio import tqdm
-from tqdm.asyncio import trange
 
 from sde.models import Agent
 from sde.models import AgentInSpace
@@ -50,7 +44,6 @@ from sde.models import MetaGroup
 from sde.models import Moon
 from sde.models import NPCCorporation
 from sde.models import NPCCorporationDivision
-from sde.models import PackagedVolume
 from sde.models import Planet
 from sde.models import PlanetResource
 from sde.models import PlanetSchematic
@@ -130,7 +123,6 @@ class Command(BaseCommand):
     hoboleaks_metadata_url = "https://sde.hoboleaks.space/tq/meta.json"
     hl_meta_data = None
     hl_url_base = "https://sde.hoboleaks.space/tq/"
-
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -1252,8 +1244,6 @@ class Command(BaseCommand):
         self.hl_meta_data = meta_data["files"]
         # pprint(self.hl_meta_data)
 
-
-
         self._load_hl_clone_states()
         self._load_hl_expert_systems()
         self._load_hl_skill_plans()
@@ -1279,7 +1269,9 @@ class Command(BaseCommand):
 
     def _hl_get_latest_load(self, file: str) -> Optional[HoboleaksStatus | None]:
         try:
-            return HoboleaksStatus.objects.filter(file__exact=file).latest("import_date")
+            return HoboleaksStatus.objects.filter(file__exact=file).latest(
+                "import_date"
+            )
         except HoboleaksStatus.DoesNotExist:
             return None
 
@@ -1300,9 +1292,7 @@ class Command(BaseCommand):
             else:
                 for k, v in data.items():
                     CloneState(
-                        id=k,
-                        skills=v["skills"],
-                        name=v["internalDescription"]
+                        id=k, skills=v["skills"], name=v["internalDescription"]
                     ).save()
                 new_load = HoboleaksStatus(
                     file="clonestates.json",
@@ -1457,7 +1447,9 @@ class Command(BaseCommand):
                         description=v["developerDescription"],
                         operation_name=v["operationName"],
                         location_modifiers=v["locationModifiers"],
-                        location_required_skill_modifiers=v["locationRequiredSkillModifiers"],
+                        location_required_skill_modifiers=v[
+                            "locationRequiredSkillModifiers"
+                        ],
                         item_modifiers=v["itemModifiers"],
                         aggregate_mode=v["aggregateMode"],
                         show_output_value_in_ui=v["showOutputValueInUI"],
@@ -1479,7 +1471,10 @@ class Command(BaseCommand):
             last_load = self._hl_get_latest_load("dynamicitemattributes.json")
             data = self._hl_get_data("dynamicitemattributes.json")
             if last_load is not None:
-                if last_load.md5 == self.hl_meta_data["dynamicitemattributes.json"]["md5"]:
+                if (
+                    last_load.md5
+                    == self.hl_meta_data["dynamicitemattributes.json"]["md5"]
+                ):
                     logger.info("Dynamic attributes already loaded")
                     return
             else:
@@ -1491,10 +1486,14 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="dynamicitemattributes.json",
-                    deprecated=self.hl_meta_data["dynamicitemattributes.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["dynamicitemattributes.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["dynamicitemattributes.json"]["stale"],
                     md5=self.hl_meta_data["dynamicitemattributes.json"]["md5"],
-                    revision=self.hl_meta_data["dynamicitemattributes.json"]["revision"],
+                    revision=self.hl_meta_data["dynamicitemattributes.json"][
+                        "revision"
+                    ],
                 )
                 new_load.save()
         except Exception as e:
@@ -1511,13 +1510,12 @@ class Command(BaseCommand):
                     return
             else:
                 for k, v in data.items():
-                    RepackagedVolume(
-                        item_id=k,
-                        volume=v
-                    ).save()
+                    RepackagedVolume(item_id=k, volume=v).save()
                 new_load = HoboleaksStatus(
                     file="repackagedvolumes.json",
-                    deprecated=self.hl_meta_data["repackagedvolumes.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["repackagedvolumes.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["repackagedvolumes.json"]["stale"],
                     md5=self.hl_meta_data["repackagedvolumes.json"]["md5"],
                     revision=self.hl_meta_data["repackagedvolumes.json"]["revision"],
@@ -1566,7 +1564,10 @@ class Command(BaseCommand):
             last_load = self._hl_get_latest_load("accountingentrytypes.json")
             data = self._hl_get_data("accountingentrytypes.json")
             if last_load is not None:
-                if last_load.md5 == self.hl_meta_data["accountingentrytypes.json"]["md5"]:
+                if (
+                    last_load.md5
+                    == self.hl_meta_data["accountingentrytypes.json"]["md5"]
+                ):
                     logger.info("Accounting entry types already loaded")
                     return
             else:
@@ -1579,11 +1580,15 @@ class Command(BaseCommand):
                         description=v.get("description", None),
                         journal_message_id=v.get("entryJournalMessageID", None),
                         message_id=v.get("entryJournalMessageID", None),
-                        message_translation=v.get("entryJournalMessageTranslated", None),
+                        message_translation=v.get(
+                            "entryJournalMessageTranslated", None
+                        ),
                     ).save()
                 new_load = HoboleaksStatus(
                     file="accountingentrytypes.json",
-                    deprecated=self.hl_meta_data["accountingentrytypes.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["accountingentrytypes.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["accountingentrytypes.json"]["stale"],
                     md5=self.hl_meta_data["accountingentrytypes.json"]["md5"],
                     revision=self.hl_meta_data["accountingentrytypes.json"]["revision"],
@@ -1642,7 +1647,9 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="industryactivities.json",
-                    deprecated=self.hl_meta_data["industryactivities.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["industryactivities.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["industryactivities.json"]["stale"],
                     md5=self.hl_meta_data["industryactivities.json"]["md5"],
                     revision=self.hl_meta_data["industryactivities.json"]["revision"],
@@ -1657,7 +1664,10 @@ class Command(BaseCommand):
             last_load = self._hl_get_latest_load("industryassemblylines.json")
             data = self._hl_get_data("industryassemblylines.json")
             if last_load is not None:
-                if last_load.md5 == self.hl_meta_data["industryassemblylines.json"]["md5"]:
+                if (
+                    last_load.md5
+                    == self.hl_meta_data["industryassemblylines.json"]["md5"]
+                ):
                     logger.info("Assembly lines already loaded")
                     return
             else:
@@ -1674,10 +1684,14 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="industryassemblylines.json",
-                    deprecated=self.hl_meta_data["industryassemblylines.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["industryassemblylines.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["industryassemblylines.json"]["stale"],
                     md5=self.hl_meta_data["industryassemblylines.json"]["md5"],
-                    revision=self.hl_meta_data["industryassemblylines.json"]["revision"],
+                    revision=self.hl_meta_data["industryassemblylines.json"][
+                        "revision"
+                    ],
                 )
                 new_load.save()
         except Exception as e:
@@ -1689,7 +1703,10 @@ class Command(BaseCommand):
             last_load = self._hl_get_latest_load("industryinstallationtypes.json")
             data = self._hl_get_data("industryinstallationtypes.json")
             if last_load is not None:
-                if last_load.md5 == self.hl_meta_data["industryinstallationtypes.json"]["md5"]:
+                if (
+                    last_load.md5
+                    == self.hl_meta_data["industryinstallationtypes.json"]["md5"]
+                ):
                     logger.info("Installation types already loaded")
                     return
             else:
@@ -1700,10 +1717,14 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="industryinstallationtypes.json",
-                    deprecated=self.hl_meta_data["industryinstallationtypes.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["industryinstallationtypes.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["industryinstallationtypes.json"]["stale"],
                     md5=self.hl_meta_data["industryinstallationtypes.json"]["md5"],
-                    revision=self.hl_meta_data["industryinstallationtypes.json"]["revision"],
+                    revision=self.hl_meta_data["industryinstallationtypes.json"][
+                        "revision"
+                    ],
                 )
                 new_load.save()
         except Exception as e:
@@ -1715,7 +1736,10 @@ class Command(BaseCommand):
             last_load = self._hl_get_latest_load("industrymodifiersources.json")
             data = self._hl_get_data("industrymodifiersources.json")
             if last_load is not None:
-                if last_load.md5 == self.hl_meta_data["industrymodifiersources.json"]["md5"]:
+                if (
+                    last_load.md5
+                    == self.hl_meta_data["industrymodifiersources.json"]["md5"]
+                ):
                     logger.info("Modifier sources already loaded")
                     return
             else:
@@ -1731,10 +1755,14 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="industrymodifiersources.json",
-                    deprecated=self.hl_meta_data["industrymodifiersources.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["industrymodifiersources.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["industrymodifiersources.json"]["stale"],
                     md5=self.hl_meta_data["industrymodifiersources.json"]["md5"],
-                    revision=self.hl_meta_data["industrymodifiersources.json"]["revision"],
+                    revision=self.hl_meta_data["industrymodifiersources.json"][
+                        "revision"
+                    ],
                 )
                 new_load.save()
         except Exception as e:
@@ -1746,7 +1774,10 @@ class Command(BaseCommand):
             last_load = self._hl_get_latest_load("industrytargetfilters.json")
             data = self._hl_get_data("industrytargetfilters.json")
             if last_load is not None:
-                if last_load.md5 == self.hl_meta_data["industrytargetfilters.json"]["md5"]:
+                if (
+                    last_load.md5
+                    == self.hl_meta_data["industrytargetfilters.json"]["md5"]
+                ):
                     logger.info("Target filters already loaded")
                     return
             else:
@@ -1759,10 +1790,14 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="industrytargetfilters.json",
-                    deprecated=self.hl_meta_data["industrytargetfilters.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["industrytargetfilters.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["industrytargetfilters.json"]["stale"],
                     md5=self.hl_meta_data["industrytargetfilters.json"]["md5"],
-                    revision=self.hl_meta_data["industrytargetfilters.json"]["revision"],
+                    revision=self.hl_meta_data["industrytargetfilters.json"][
+                        "revision"
+                    ],
                 )
                 new_load.save()
         except Exception as e:
@@ -1785,7 +1820,9 @@ class Command(BaseCommand):
                     ).save()
                 new_load = HoboleaksStatus(
                     file="compressibletypes.json",
-                    deprecated=self.hl_meta_data["compressibletypes.json"]["deprecated"],
+                    deprecated=self.hl_meta_data["compressibletypes.json"][
+                        "deprecated"
+                    ],
                     stale=self.hl_meta_data["compressibletypes.json"]["stale"],
                     md5=self.hl_meta_data["compressibletypes.json"]["md5"],
                     revision=self.hl_meta_data["compressibletypes.json"]["revision"],

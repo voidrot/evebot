@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class RepackagedVolume(models.Model):
     item_id = models.IntegerField(primary_key=True)
     volume = models.FloatField()

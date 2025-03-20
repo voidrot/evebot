@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class IndustryAssemblyLine(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
@@ -9,3 +10,6 @@ class IndustryAssemblyLine(models.Model):
     base_time_multiplier = models.FloatField()
     details_per_group = models.JSONField(default=list)
     details_per_category = models.JSONField(default=list)
+
+    def __str__(self):
+        return f"{self.name}"
