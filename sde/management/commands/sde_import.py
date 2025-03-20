@@ -1,8 +1,10 @@
+# ruff: noqa: G004
 import asyncio
 import hashlib
 import logging
 import shutil
 import time
+from typing import Optional
 import zipfile
 from asyncio import sleep
 from pathlib import Path
@@ -66,6 +68,24 @@ from sde.models import StationService
 from sde.models import Type
 from sde.models import TypeDogma
 from sde.models import TypeMaterial
+from sde.models.accounting_entry_types import AccountingEntryType
+from sde.models.agent_types import AgentType
+from sde.models.clone_states import CloneState
+from sde.models.compressible_types import CompressibleType
+from sde.models.debuffs import Debuff
+from sde.models.dogma_units import DogmaUnit
+from sde.models.dynamic_item_attributes import DynamicItemAttribute
+from sde.models.expert_systems import ExpertSystem
+from sde.models.hoboleaks_status import HoboleaksStatus
+from sde.models.industry_activities import IndustryActivity
+from sde.models.industry_assembly_lines import IndustryAssemblyLine
+from sde.models.industry_installation_type import IndustryInstallationType
+from sde.models.industry_modifiers import IndustryModifier
+from sde.models.industry_target_filters import IndustryTargetFilter
+from sde.models.repackaged_volumes import RepackagedVolume
+from sde.models.school_map import SchoolMap
+from sde.models.schools import School
+from sde.models.skill_plans import SkillPlan
 from sde.models.stargates import Stargate
 from sde.models.stars import Star
 
@@ -106,6 +126,11 @@ class Command(BaseCommand):
     sde_inv_unique_names = {}
 
     jobs = {}
+
+    hoboleaks_metadata_url = "https://sde.hoboleaks.space/tq/meta.json"
+    hl_meta_data = None
+    hl_url_base = "https://sde.hoboleaks.space/tq/"
+
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -214,49 +239,47 @@ class Command(BaseCommand):
         )
 
     async def _load_async_tasks(self):
-        # await self._load_agents()
-        # await self._load_inv_flags()
-        # await self._load_inv_items()
-        # await self._load_inv_names()
-        # await self._load_inv_positions()
-        # await self._load_inv_unique_names()
-        # await self._load_sta_stations()
-        # await self._load_ancestries()
-        # await self._load_bloodlines()
-        # await self._load_blueprints()
-        # await self._load_categories()
-        # await self._load_certificates()
-        # await self._load_character_attributes()
-        # await self._load_contraband_types()
-        # await self._load_control_tower_resources()
-        # await self._load_corporation_activity()
-        # await self._load_dogma_attribute_categories()
-        # await self._load_dogma_attributes()
-        # await self._load_dogma_effects()
-        # await self._load_factions()
-        # await self._load_graphic_ids()
-        # await self._load_groups()
-        # await self._load_icon_ids()
-        # await self._load_landmarks()
-        # await self._load_market_groups()
-        # await self._load_meta_groups()
-        # await self._load_npc_corporations()
-        # await self._load_npc_corporation_divisions()
-        # await self._load_planet_resources()
-        # await self._load_planet_schematics()
-        # await self._load_races()
-        # await self._load_research_agents()
-        # await self._load_skin_licenses()
-        # await self._load_skin_materials()
-        # await self._load_skins()
-        # await self._load_sovereignty_upgrades()
-        # await self._load_station_operations()
-        # await self._load_station_services()
-        # await self._load_type_dogma()
-        # await self._load_type_materials()
-        # await self._load_types()
-
-        pass
+        await self._load_agents()
+        await self._load_inv_flags()
+        await self._load_inv_items()
+        await self._load_inv_names()
+        await self._load_inv_positions()
+        await self._load_inv_unique_names()
+        await self._load_sta_stations()
+        await self._load_ancestries()
+        await self._load_bloodlines()
+        await self._load_blueprints()
+        await self._load_categories()
+        await self._load_certificates()
+        await self._load_character_attributes()
+        await self._load_contraband_types()
+        await self._load_control_tower_resources()
+        await self._load_corporation_activity()
+        await self._load_dogma_attribute_categories()
+        await self._load_dogma_attributes()
+        await self._load_dogma_effects()
+        await self._load_factions()
+        await self._load_graphic_ids()
+        await self._load_groups()
+        await self._load_icon_ids()
+        await self._load_landmarks()
+        await self._load_market_groups()
+        await self._load_meta_groups()
+        await self._load_npc_corporations()
+        await self._load_npc_corporation_divisions()
+        await self._load_planet_resources()
+        await self._load_planet_schematics()
+        await self._load_races()
+        await self._load_research_agents()
+        await self._load_skin_licenses()
+        await self._load_skin_materials()
+        await self._load_skins()
+        await self._load_sovereignty_upgrades()
+        await self._load_station_operations()
+        await self._load_station_services()
+        await self._load_type_dogma()
+        await self._load_type_materials()
+        await self._load_types()
 
     async def _load_inv_flags(self):
         logger.info("Loading invFlags data to model")
@@ -1225,6 +1248,12 @@ class Command(BaseCommand):
                                 ).save()
 
     def _load_hoboleaks(self):
+        meta_data = httpx.get(self.hoboleaks_metadata_url).json()
+        self.hl_meta_data = meta_data["files"]
+        # pprint(self.hl_meta_data)
+
+
+
         self._load_hl_clone_states()
         self._load_hl_expert_systems()
         self._load_hl_skill_plans()
@@ -1248,44 +1277,347 @@ class Command(BaseCommand):
         self._load_hl_compressible_types()
         self._load_hl_type_materials()
 
+    def _hl_get_latest_load(self, file: str) -> Optional[HoboleaksStatus | None]:
+        try:
+            return HoboleaksStatus.objects.filter(file__exact=file).latest("import_date")
+        except HoboleaksStatus.DoesNotExist:
+            return None
+
+    def _hl_get_md5(self, data: str) -> str:
+        return hashlib.md5(data.encode()).hexdigest()
+
+    def _hl_get_data(self, file: str):
+        return httpx.get(self.hl_url_base + file).json()
+
     def _load_hl_clone_states(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("clonestates.json")
+            data = self._hl_get_data("clonestates.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["clonestates.json"]["md5"]:
+                    logger.info("Clone states already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    CloneState(
+                        id=k,
+                        skills=v["skills"],
+                        name=v["internalDescription"]
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="clonestates.json",
+                    deprecated=self.hl_meta_data["clonestates.json"]["deprecated"],
+                    stale=self.hl_meta_data["clonestates.json"]["stale"],
+                    md5=self.hl_meta_data["clonestates.json"]["md5"],
+                    revision=self.hl_meta_data["clonestates.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading clone states: {e}")
+            return
 
     def _load_hl_expert_systems(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("expertsystems.json")
+            data = self._hl_get_data("expertsystems.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["expertsystems.json"]["md5"]:
+                    logger.info("Expert systems already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    ExpertSystem(
+                        id=k,
+                        name=v["internalName"],
+                        hidden=v["esHidden"],
+                        duration_days=v["durationDays"],
+                        skills_granted=v["skillsGranted"],
+                        associated_ship_types=v.get("associatedShipTypes", []),
+                        retired=v["esRetired"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="expertsystems.json",
+                    deprecated=self.hl_meta_data["expertsystems.json"]["deprecated"],
+                    stale=self.hl_meta_data["expertsystems.json"]["stale"],
+                    md5=self.hl_meta_data["expertsystems.json"]["md5"],
+                    revision=self.hl_meta_data["expertsystems.json"]["revision"],
+                )
+                new_load.save()
+
+        except Exception as e:
+            logger.exception(f"Error loading expert systems: {e}")
+            return
 
     def _load_hl_skill_plans(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("skillplans.json")
+            data = self._hl_get_data("skillplans.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["skillplans.json"]["md5"]:
+                    logger.info("Skill plans already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    SkillPlan(
+                        id=k,
+                        name=v["name"],
+                        internal_name=v["internalName"],
+                        milestones=v["milestones"],
+                        description=v["description"],
+                        career_path_id=v.get("careerPathID", None),
+                        skill_requirements=v["skillRequirements"],
+                        faction_id=v.get("factionID", None),
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="skillplans.json",
+                    deprecated=self.hl_meta_data["skillplans.json"]["deprecated"],
+                    stale=self.hl_meta_data["skillplans.json"]["stale"],
+                    md5=self.hl_meta_data["skillplans.json"]["md5"],
+                    revision=self.hl_meta_data["skillplans.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading skill plans: {e}")
+            return
 
     def _load_hl_schools(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("schools.json")
+            data = self._hl_get_data("schools.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["schools.json"]["md5"]:
+                    logger.info("Schools already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    School(
+                        id=k,
+                        corporation_id=v.get("corporationID", None),
+                        career_id=v.get("careerID", None),
+                        race_id=v["raceID"],
+                        name=v.get("name", None),
+                        internal_name=v.get("internalName", None),
+                        icon_id=v.get("iconID", None),
+                        starting_stations=v.get("startingStations", None),
+                        description=v["description"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="schools.json",
+                    deprecated=self.hl_meta_data["schools.json"]["deprecated"],
+                    stale=self.hl_meta_data["schools.json"]["stale"],
+                    md5=self.hl_meta_data["schools.json"]["md5"],
+                    revision=self.hl_meta_data["schools.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading schools: {e}")
+            return
 
     def _load_hl_school_map(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("schoolmap.json")
+            data = self._hl_get_data("schoolmap.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["schoolmap.json"]["md5"]:
+                    logger.info("School map already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    SchoolMap(
+                        id=k,
+                        school_id=v["schoolID"],
+                        solar_system_id=v["solarSystemID"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="schoolmap.json",
+                    deprecated=self.hl_meta_data["schoolmap.json"]["deprecated"],
+                    stale=self.hl_meta_data["schoolmap.json"]["stale"],
+                    md5=self.hl_meta_data["schoolmap.json"]["md5"],
+                    revision=self.hl_meta_data["schoolmap.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading school map: {e}")
+            return
 
     def _load_hl_debuffs(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("dbuffs.json")
+            data = self._hl_get_data("dbuffs.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["dbuffs.json"]["md5"]:
+                    logger.info("Debuffs already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    Debuff(
+                        id=k,
+                        name_id=v.get("displayNameID", None),
+                        location_group_modifiers=v["locationGroupModifiers"],
+                        description=v["developerDescription"],
+                        operation_name=v["operationName"],
+                        location_modifiers=v["locationModifiers"],
+                        location_required_skill_modifiers=v["locationRequiredSkillModifiers"],
+                        item_modifiers=v["itemModifiers"],
+                        aggregate_mode=v["aggregateMode"],
+                        show_output_value_in_ui=v["showOutputValueInUI"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="dbuffs.json",
+                    deprecated=self.hl_meta_data["dbuffs.json"]["deprecated"],
+                    stale=self.hl_meta_data["dbuffs.json"]["stale"],
+                    md5=self.hl_meta_data["dbuffs.json"]["md5"],
+                    revision=self.hl_meta_data["dbuffs.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading debuffs: {e}")
+            return
 
     def _load_hl_dynamic_attributes(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("dynamicitemattributes.json")
+            data = self._hl_get_data("dynamicitemattributes.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["dynamicitemattributes.json"]["md5"]:
+                    logger.info("Dynamic attributes already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    DynamicItemAttribute(
+                        id=k,
+                        input_output_mapping=v["inputOutputMapping"],
+                        attribute_ids=v["attributeIDs"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="dynamicitemattributes.json",
+                    deprecated=self.hl_meta_data["dynamicitemattributes.json"]["deprecated"],
+                    stale=self.hl_meta_data["dynamicitemattributes.json"]["stale"],
+                    md5=self.hl_meta_data["dynamicitemattributes.json"]["md5"],
+                    revision=self.hl_meta_data["dynamicitemattributes.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading dynamic item attributes: {e}")
+            return
 
     def _load_hl_repackaged_volumes(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("repackagedvolumes.json")
+            data = self._hl_get_data("repackagedvolumes.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["repackagedvolumes.json"]["md5"]:
+                    logger.info("Repackaged volumes already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    RepackagedVolume(
+                        item_id=k,
+                        volume=v
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="repackagedvolumes.json",
+                    deprecated=self.hl_meta_data["repackagedvolumes.json"]["deprecated"],
+                    stale=self.hl_meta_data["repackagedvolumes.json"]["stale"],
+                    md5=self.hl_meta_data["repackagedvolumes.json"]["md5"],
+                    revision=self.hl_meta_data["repackagedvolumes.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading repackaged volumes: {e}")
+            return
 
     def _load_hl_attribute_orders(self):
         pass
 
     def _load_dogma_units(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("dogmaunits.json")
+            data = self._hl_get_data("dogmaunits.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["dogmaunits.json"]["md5"]:
+                    logger.info("Dogma units already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    DogmaUnit(
+                        id=k,
+                        name=v["name"],
+                        description=v.get("description", None),
+                        display_name=v.get("displayName", None),
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="dogmaunits.json",
+                    deprecated=self.hl_meta_data["dogmaunits.json"]["deprecated"],
+                    stale=self.hl_meta_data["dogmaunits.json"]["stale"],
+                    md5=self.hl_meta_data["dogmaunits.json"]["md5"],
+                    revision=self.hl_meta_data["dogmaunits.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading dogma units: {e}")
+            return
 
     def _load_dogma_effects_categories(self):
         pass
 
     def _load_hl_accounting_entry_types(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("accountingentrytypes.json")
+            data = self._hl_get_data("accountingentrytypes.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["accountingentrytypes.json"]["md5"]:
+                    logger.info("Accounting entry types already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    AccountingEntryType(
+                        id=k,
+                        name_id=v["entryTypeNameID"],
+                        name=v["name"],
+                        name_translation=v.get("entryTypeNameTranslated", None),
+                        description=v.get("description", None),
+                        journal_message_id=v.get("entryJournalMessageID", None),
+                        message_id=v.get("entryJournalMessageID", None),
+                        message_translation=v.get("entryJournalMessageTranslated", None),
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="accountingentrytypes.json",
+                    deprecated=self.hl_meta_data["accountingentrytypes.json"]["deprecated"],
+                    stale=self.hl_meta_data["accountingentrytypes.json"]["stale"],
+                    md5=self.hl_meta_data["accountingentrytypes.json"]["md5"],
+                    revision=self.hl_meta_data["accountingentrytypes.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading accounting entry types: {e}")
+            return
 
     def _load_hl_agent_types(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("agenttypes.json")
+            data = self._hl_get_data("agenttypes.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["agenttypes.json"]["md5"]:
+                    logger.info("Agent types already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    AgentType(
+                        id=k,
+                        name=v,
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="agenttypes.json",
+                    deprecated=self.hl_meta_data["agenttypes.json"]["deprecated"],
+                    stale=self.hl_meta_data["agenttypes.json"]["stale"],
+                    md5=self.hl_meta_data["agenttypes.json"]["md5"],
+                    revision=self.hl_meta_data["agenttypes.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading agent types: {e}")
+            return
 
     def _load_hl_station_standings_restrictions(self):
         pass
@@ -1294,22 +1626,197 @@ class Command(BaseCommand):
         pass
 
     def _load_hl_industry_activities(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("industryactivities.json")
+            data = self._hl_get_data("industryactivities.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["industryactivities.json"]["md5"]:
+                    logger.info("Industry activities already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    IndustryActivity(
+                        id=k,
+                        name=v["activityName"],
+                        description=v.get("description", None),
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="industryactivities.json",
+                    deprecated=self.hl_meta_data["industryactivities.json"]["deprecated"],
+                    stale=self.hl_meta_data["industryactivities.json"]["stale"],
+                    md5=self.hl_meta_data["industryactivities.json"]["md5"],
+                    revision=self.hl_meta_data["industryactivities.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading industry activities: {e}")
+            return
 
     def _load_hl_industry_assembly_lines(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("industryassemblylines.json")
+            data = self._hl_get_data("industryassemblylines.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["industryassemblylines.json"]["md5"]:
+                    logger.info("Assembly lines already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    IndustryAssemblyLine(
+                        id=k,
+                        name=v["name"],
+                        description=v.get("description", None),
+                        activity_id=v["activity"],
+                        base_material_multiplier=v["base_material_multiplier"],
+                        base_time_multiplier=v["base_time_multiplier"],
+                        details_per_group=v["details_per_group"],
+                        details_per_category=v["details_per_category"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="industryassemblylines.json",
+                    deprecated=self.hl_meta_data["industryassemblylines.json"]["deprecated"],
+                    stale=self.hl_meta_data["industryassemblylines.json"]["stale"],
+                    md5=self.hl_meta_data["industryassemblylines.json"]["md5"],
+                    revision=self.hl_meta_data["industryassemblylines.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading assembly lines: {e}")
+            return
 
     def _load_hl_industry_installation_types(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("industryinstallationtypes.json")
+            data = self._hl_get_data("industryinstallationtypes.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["industryinstallationtypes.json"]["md5"]:
+                    logger.info("Installation types already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    IndustryInstallationType(
+                        id=k,
+                        assembly_lines=v["assembly_lines"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="industryinstallationtypes.json",
+                    deprecated=self.hl_meta_data["industryinstallationtypes.json"]["deprecated"],
+                    stale=self.hl_meta_data["industryinstallationtypes.json"]["stale"],
+                    md5=self.hl_meta_data["industryinstallationtypes.json"]["md5"],
+                    revision=self.hl_meta_data["industryinstallationtypes.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading installation types: {e}")
+            return
 
     def _load_hl_industry_modifier_sources(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("industrymodifiersources.json")
+            data = self._hl_get_data("industrymodifiersources.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["industrymodifiersources.json"]["md5"]:
+                    logger.info("Modifier sources already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    IndustryModifier(
+                        id=k,
+                        manufacturing=v.get("manufacturing", None),
+                        research_material=v.get("research_material", None),
+                        research_time=v.get("research_time", None),
+                        invention=v.get("invention", None),
+                        copying=v.get("copying", None),
+                        reaction=v.get("reaction", None),
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="industrymodifiersources.json",
+                    deprecated=self.hl_meta_data["industrymodifiersources.json"]["deprecated"],
+                    stale=self.hl_meta_data["industrymodifiersources.json"]["stale"],
+                    md5=self.hl_meta_data["industrymodifiersources.json"]["md5"],
+                    revision=self.hl_meta_data["industrymodifiersources.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading modifier sources: {e}")
+            return
 
     def _load_hl_industry_target_filters(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("industrytargetfilters.json")
+            data = self._hl_get_data("industrytargetfilters.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["industrytargetfilters.json"]["md5"]:
+                    logger.info("Target filters already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    IndustryTargetFilter(
+                        id=k,
+                        name=v["name"],
+                        category_ids=v["categoryIDs"],
+                        group_ids=v["groupIDs"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="industrytargetfilters.json",
+                    deprecated=self.hl_meta_data["industrytargetfilters.json"]["deprecated"],
+                    stale=self.hl_meta_data["industrytargetfilters.json"]["stale"],
+                    md5=self.hl_meta_data["industrytargetfilters.json"]["md5"],
+                    revision=self.hl_meta_data["industrytargetfilters.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading target filters: {e}")
+            return
 
     def _load_hl_compressible_types(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("compressibletypes.json")
+            data = self._hl_get_data("compressibletypes.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["compressibletypes.json"]["md5"]:
+                    logger.info("Compressible types already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    CompressibleType(
+                        id=k,
+                        type_id=v,
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="compressibletypes.json",
+                    deprecated=self.hl_meta_data["compressibletypes.json"]["deprecated"],
+                    stale=self.hl_meta_data["compressibletypes.json"]["stale"],
+                    md5=self.hl_meta_data["compressibletypes.json"]["md5"],
+                    revision=self.hl_meta_data["compressibletypes.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading compressible types: {e}")
+            return
 
     def _load_hl_type_materials(self):
-        pass
+        try:
+            last_load = self._hl_get_latest_load("typematerials.json")
+            data = self._hl_get_data("typematerials.json")
+            if last_load is not None:
+                if last_load.md5 == self.hl_meta_data["typematerials.json"]["md5"]:
+                    logger.info("Type materials already loaded")
+                    return
+            else:
+                for k, v in data.items():
+                    TypeMaterial(
+                        id=k,
+                        materials=v["materials"],
+                    ).save()
+                new_load = HoboleaksStatus(
+                    file="typematerials.json",
+                    deprecated=self.hl_meta_data["typematerials.json"]["deprecated"],
+                    stale=self.hl_meta_data["typematerials.json"]["stale"],
+                    md5=self.hl_meta_data["typematerials.json"]["md5"],
+                    revision=self.hl_meta_data["typematerials.json"]["revision"],
+                )
+                new_load.save()
+        except Exception as e:
+            logger.exception(f"Error loading type materials: {e}")
+            return
