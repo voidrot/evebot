@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "evebot-dev",
+            "group": "evebot",
+            "database": "evebot",
+            "username": "evebot",
+            "password": "evebot"
+        }
+    ],
+    "cSpell.words": [
+        "Stargate",
+        "stargates"
+    ]
+}

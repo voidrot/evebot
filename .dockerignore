@@ -1,0 +1,10 @@
+.editorconfig
+.gitattributes
+.github
+.gitignore
+.idea
+.vscode
+.pre-commit-config.yaml
+venv
+.venv
+.env*
