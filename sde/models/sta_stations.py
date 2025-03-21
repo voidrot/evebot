@@ -15,11 +15,11 @@ class Station(models.Model):
     reprocessing_stations_take = models.FloatField()
     security = models.FloatField()
     solar_system_id = models.IntegerField()
-    station_name = models.TextField()
     station_type_id = models.IntegerField()
     x = models.FloatField()
     y = models.FloatField()
     z = models.FloatField()
+    station_name = models.TextField()
 
     def __str__(self):
         return f"{self.id}"

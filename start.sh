@@ -5,18 +5,20 @@ set -o pipefail
 set -o nounset
 
 function start_dev_server() {
+  echo "Running collectstatic..."
+  python manage.py collectstatic --noinput --no-color
   echo "Running makemigrations..."
   python manage.py makemigrations
   echo "Running migrate..."
   python manage.py migrate
   echo "Starting development server..."
-  exec uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
+  exec uvicorn evebot.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
 }
 
 function start_prod_server() {
   python manage.py collectstatic --noinput --no-color
   echo "Starting production server..."
-  python -m gunicorn config.asgi:application -k uvicorn_worker.UvicornWorker
+  python -m gunicorn evebot.asgi:application -k uvicorn_worker.UvicornWorker
 }
 
 if [ $# -eq 0 ]; then
@@ -33,21 +35,21 @@ if [ "$PROCESS_TYPE" == "server" ]; then
     start_prod_server
   fi
 elif [ "$PROCESS_TYPE" == "beat" ]; then
-  if [[ -z "DEBUG" ] && [ -s DEBUG ]]; then
+  if [[ -z "DEBUG" && -s DEBUG ]]; then
     rm -f './celerybeat.pid'
-    exec watchfiles --filter python celery.__main__.main --args '-A config.celery_app beat -l INFO'
+    exec watchfiles --filter python celery.__main__.main --args '-A evebot.celery_app beat -l INFO'
   else
-    exec celery -A config.celery_app beat -l INFO
+    exec celery -A evebot.celery_app beat -l INFO
   fi
 elif [ "$PROCESS_TYPE" == "worker" ]; then
-  if [[ -z "DEBUG" ] && [ -s DEBUG ]]; then
-    exec watchfiles --filter python celery.__main__.main --args '-A config.celery_app worker -l INFO'
+  if [[ -z "DEBUG" && -s DEBUG ]]; then
+    exec watchfiles --filter python celery.__main__.main --args '-A evebot.celery_app worker -l INFO'
   else
-    exec celery -A config.celery_app worker -l INFO
+    exec celery -A evebot.celery_app worker -l INFO
   fi
 elif [ "$PROCESS_TYPE" == "flower" ]; then
-  if [[ -z "DEBUG" ] && [ -s DEBUG ]]; then
-    until timeout 10 celery -A config.celery_app inspect ping; do
+  if [[ -z "DEBUG" && -s DEBUG ]]; then
+    until timeout 10 celery -A evebot.celery_app inspect ping; do
       >&2 echo "Celery workers not available"
     done
 
@@ -55,16 +57,16 @@ elif [ "$PROCESS_TYPE" == "flower" ]; then
 
     exec watchfiles --filter python celery.__main__.main \
       --args \
-      "-A config.celery_app -b \"${VALKEY_URL}\" flower --basic_auth=\"${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}\""
+      "-A evebot.celery_app -b \"${VALKEY_URL}\" flower --basic_auth=\"${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}\""
   else
-    until timeout 10 celery -A config.celery_app inspect ping; do
+    until timeout 10 celery -A evebot.celery_app inspect ping; do
       >&2 echo "Celery workers not available"
     done
 
     echo 'Starting flower'
 
     exec celery \
-        -A config.celery_app \
+        -A evebot.celery_app \
         -b "${VALKEY_URL}" \
         flower \
         --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"

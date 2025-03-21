@@ -15,6 +15,42 @@ services:
     environment:
       DEBUG: True
     env_file: .env.compose
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./evebot
+          target: /app/evebot
+          ignore: &watch_ignore
+            - .git
+            - .github
+            - .*_cache
+            - .sde-workspace
+            - .venv
+            - "**/__pycache__"
+            - .vscode
+            - deployment
+            - .editorconfig
+            - .env
+            - .env.compose
+            - .gitignore
+            - .gitattributes
+            - justfile
+            - compose.yml
+        - action: sync+restart
+          path: ./scripts/start.sh
+          target: /app/start.sh
+        - action: sync
+          path: ./templates
+          target: /app/templates
+          ignore: *watch_ignore
+        - action: sync
+          path: ./sde
+          target: /app/sde
+          ignore: *watch_ignore
+        - action: sync
+          path: ./eve_interface
+          target: /app/eve_interface
+          ignore: *watch_ignore
 
   database:
     image: postgres:17

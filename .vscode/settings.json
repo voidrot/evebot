@@ -10,9 +10,20 @@
             "database": "evebot",
             "username": "evebot",
             "password": "evebot"
+        },
+        {
+            "previewLimit": 50,
+            "server": "192.168.12.128",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "evebot-prod",
+            "group": "evebot",
+            "database": "evebot",
+            "username": "evebot"
         }
     ],
     "cSpell.words": [
+        "Debuff",
         "Stargate",
         "stargates"
     ]
