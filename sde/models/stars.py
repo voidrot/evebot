@@ -9,11 +9,11 @@ class Star(models.Model):
     locked = models.BooleanField()
     luminosity = models.FloatField()
     radius = models.FloatField()
-    spectral_class = models.TextField()
     temperature = models.FloatField()
     constellation_id = models.IntegerField()
     region_id = models.IntegerField()
     solar_system_id = models.IntegerField()
+    spectral_class = models.TextField()
 
     def __str__(self):
         return f"{self.id}"

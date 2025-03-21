@@ -6,9 +6,9 @@ class School(models.Model):
     corporation_id = models.IntegerField()
     career_id = models.IntegerField()
     race_id = models.IntegerField()
-    name = models.TextField(null=True, default=None)
-    internal_name = models.TextField(null=True, default=None)
     icon_id = models.IntegerField(null=True, default=None)
+    name = models.TextField(null=True, default=None)  # noqa: DJ001
+    internal_name = models.TextField(null=True, default=None)  # noqa: DJ001
     description = models.TextField()
     starting_stations = models.JSONField(default=list, null=True)
 

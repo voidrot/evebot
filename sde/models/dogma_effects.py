@@ -8,9 +8,7 @@ class DogmaEffect(models.Model):
     duration_attribute_id = models.IntegerField(default=None, null=True, blank=True)
     effect_category = models.IntegerField()
     effect_id = models.IntegerField()
-    effect_name = models.TextField()
     electronic_chance = models.BooleanField()
-    guid = models.TextField(null=True, default=None)
     is_assistance = models.BooleanField()
     is_offensive = models.BooleanField()
     is_warp_safe = models.BooleanField()
@@ -23,11 +21,7 @@ class DogmaEffect(models.Model):
     tracking_speed_attribute_id = models.IntegerField(
         default=None, null=True, blank=True
     )
-    description_id = models.JSONField(default=dict, null=True, blank=True)
-    display_name_id = models.JSONField(default=dict, null=True, blank=True)
     icon_id = models.IntegerField(default=None, null=True, blank=True)
-    modifier_info = models.JSONField(default=list, null=True, blank=True)
-    sfx_name = models.TextField(null=True, default=None)
     npc_usage_chance_attribute_id = models.IntegerField(
         default=None, null=True, blank=True
     )
@@ -38,6 +32,12 @@ class DogmaEffect(models.Model):
         default=None, null=True, blank=True
     )
     resistance_attribute_id = models.IntegerField(default=None, null=True, blank=True)
+    effect_name = models.TextField()
+    guid = models.TextField(null=True, default=None)  # noqa: DJ001
+    description_id = models.JSONField(default=dict, null=True, blank=True)
+    display_name_id = models.JSONField(default=dict, null=True, blank=True)
+    modifier_info = models.JSONField(default=list, null=True, blank=True)
+    sfx_name = models.TextField(null=True, default=None)  # noqa: DJ001
 
     def __str__(self):
         return f"{self.id}"

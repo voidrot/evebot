@@ -38,14 +38,13 @@ from .inv_items import InvItem
 from .inv_names import InvName
 from .inv_positions import InvPosition
 from .inv_unique_names import InvUniqueName
+from .item_types import Type
 from .landmarks import Landmark
 from .market_groups import MarketGroup
 from .meta_groups import MetaGroup
 from .moons import Moon
 from .npc_corporation_divisions import NPCCorporationDivision
 from .npc_corporations import NPCCorporation
-
-# from .packaged_volume import PackagedVolume
 from .planet_resources import PlanetResource
 from .planet_schematics import PlanetSchematic
 from .planets import Planet
@@ -68,7 +67,8 @@ from .station_operations import StationOperation
 from .station_services import StationService
 from .type_dogma import TypeDogma
 from .type_materials import TypeMaterial
-from .types import Type
+
+# from .packaged_volume import PackagedVolume  # noqa: ERA001
 
 __all__ = [
     "AccountingEntryType",

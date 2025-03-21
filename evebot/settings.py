@@ -22,6 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(str(BASE_DIR / ".env"))
 
+print(env("DATABASE_URL"))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
