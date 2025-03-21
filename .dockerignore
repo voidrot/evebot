@@ -8,3 +8,11 @@
 venv
 .venv
 .env*
+.mypy_cache
+.ruff_cache
+.sde-workspace
+justfile
+.pre-commit-config.yaml
+.editorconfig
+.infisical.json
+compose.yml

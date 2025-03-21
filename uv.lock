@@ -541,6 +541,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-celery-results"
+version = "2.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "celery" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/75/24/a13ad6a276f62385da6d83a1995ded452d173841b6e0a83a899c3b75062e/django_celery_results-2.5.1.tar.gz", hash = "sha256:3ecb7147f773f34d0381bac6246337ce4cf88a2ea7b82774ed48e518b67bb8fd", size = 80944 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/05/2e/aa82857354d5227922c2ae6e83e5214537d8f108184bfeea6704d0b045d8/django_celery_results-2.5.1-py3-none-any.whl", hash = "sha256:0da4cd5ecc049333e4524a23fcfc3460dfae91aa0a60f1fae4b6b2889c254e01", size = 36293 },
+]
+
+[[package]]
 name = "django-click"
 version = "2.4.1"
 source = { registry = "https://pypi.org/simple" }
@@ -721,6 +734,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-prometheus"
+version = "2.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "prometheus-client" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e1/51/485b4122e00f2b8efec8a6d718ef4ce6b150231e49398e554ce1151f65c3/django-prometheus-2.3.1.tar.gz", hash = "sha256:f9c8b6c780c9419ea01043c63a437d79db2c33353451347894408184ad9c3e1e", size = 24718 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/75/fb3d4f056f9ed4f8848817d5afd7a1d949632ab117452ccd179e3839cfc4/django_prometheus-2.3.1-py2.py3-none-any.whl", hash = "sha256:cf9b26f7ba2e4568f08f8f91480a2882023f5908579681bcf06a4d2465f12168", size = 29081 },
+]
+
+[[package]]
 name = "django-redis"
 version = "5.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -859,6 +884,7 @@ dependencies = [
     { name = "django" },
     { name = "django-anymail" },
     { name = "django-celery-beat" },
+    { name = "django-celery-results" },
     { name = "django-click" },
     { name = "django-compressor" },
     { name = "django-cotton" },
@@ -869,6 +895,7 @@ dependencies = [
     { name = "django-esi" },
     { name = "django-health-check" },
     { name = "django-model-utils" },
+    { name = "django-prometheus" },
     { name = "django-redis" },
     { name = "django-structlog" },
     { name = "environ" },
@@ -923,6 +950,7 @@ requires-dist = [
     { name = "django", specifier = ">=5.1.6" },
     { name = "django-anymail", specifier = ">=12.0" },
     { name = "django-celery-beat", specifier = ">=2.7.0" },
+    { name = "django-celery-results", specifier = ">=2.5.1" },
     { name = "django-click", specifier = ">=2.4.1" },
     { name = "django-compressor", specifier = ">=4.5.1" },
     { name = "django-cotton", specifier = ">=1.6.0" },
@@ -933,6 +961,7 @@ requires-dist = [
     { name = "django-esi", specifier = ">=6.0.0" },
     { name = "django-health-check", specifier = ">=3.18.3" },
     { name = "django-model-utils", specifier = ">=5.0.0" },
+    { name = "django-prometheus", specifier = ">=2.3.1" },
     { name = "django-redis", specifier = ">=5.4.0" },
     { name = "django-structlog", specifier = ">=9.0.1" },
     { name = "environ", specifier = ">=1.0" },
