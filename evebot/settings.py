@@ -68,7 +68,11 @@ INSTALLED_APPS = [
     "health_check.contrib.redis",
     "esi",
     "sde.apps.SdeConfig",
-    "eve_interface.apps.EveInterfaceConfig",
+    "market.apps.MarketConfig",
+    "alliance.apps.AllianceConfig",
+    "character.apps.CharacterConfig",
+    "industry.apps.IndustryConfig",
+    "combat.apps.CombatConfig",
 ]
 
 MIDDLEWARE = [
