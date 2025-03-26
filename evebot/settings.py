@@ -267,7 +267,7 @@ CELERY_BEAT_CRON_STARTING_DEADLINE = 60 * 5
 
 
 EMAIL_HOST = env("EMAIL_HOST", default="localhost")
-EMAIL_PORT = 1025
+EMAIL_PORT = env("EMAIL_PORT", 1025)
 EMAIL_BACKEND = env(
     "DJANGO_EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
@@ -288,4 +288,4 @@ DEBUG_TOOLBAR_CONFIG = {
 ESI_SSO_CLIENT_ID = env("ESI_SSO_CLIENT_ID")
 ESI_SSO_CLIENT_SECRET = env("ESI_SSO_CLIENT_SECRET")
 ESI_SSO_CALLBACK_URL = env("ESI_SSO_CALLBACK_URL")
-ESI_USER_CONTACT_EMAIL = "bbrady145@gmail.com; eve:Anubis Assassin; discord:kalstir"
+ESI_USER_CONTACT_EMAIL = env("ESI_USER_CONTACT_EMAIL", "bbrady145@gmail.com")

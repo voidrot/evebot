@@ -543,3 +543,5 @@ $RECYCLE.BIN/
 sql.workspace
 .aider*
 .infisical.json
+media/
+staticfiles/
