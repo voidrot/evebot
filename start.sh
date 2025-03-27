@@ -18,7 +18,7 @@ function start_dev_server() {
 function start_prod_server() {
   python manage.py collectstatic --noinput --no-color
   echo "Starting production server..."
-  python -m gunicorn evebot.asgi:application -k uvicorn_worker.UvicornWorker
+  python -m gunicorn evebot.asgi:application -k uvicorn_worker.UvicornWorker --bind 0.0.0.0:8000
 }
 
 if [ $# -eq 0 ]; then
