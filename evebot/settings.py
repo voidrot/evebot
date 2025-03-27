@@ -267,7 +267,7 @@ CELERY_BEAT_CRON_STARTING_DEADLINE = 60 * 5
 
 
 EMAIL_HOST = env("EMAIL_HOST", default="localhost")
-EMAIL_PORT = env("EMAIL_PORT", 1025)
+EMAIL_PORT = env("EMAIL_PORT", default=1025, cast=int)
 EMAIL_BACKEND = env(
     "DJANGO_EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
