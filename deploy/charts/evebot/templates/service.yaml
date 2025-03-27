@@ -13,3 +13,20 @@ spec:
       name: http
   selector:
     {{- include "evebot.selectorLabels" . | nindent 4 }}
+    evebot-app: app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "evebot.fullname" . }}-celery-flower
+  labels:
+    {{- include "evebot.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 5555
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    evebot-app: flower

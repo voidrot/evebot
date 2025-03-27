@@ -285,6 +285,11 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
 }
 
+CSRF_TRUSTED_ORIGINS  = [
+    "http://localhost:8000",
+    "https://evebot.voidrot.com"
+]
+
 ESI_SSO_CLIENT_ID = env("ESI_SSO_CLIENT_ID")
 ESI_SSO_CLIENT_SECRET = env("ESI_SSO_CLIENT_SECRET")
 ESI_SSO_CALLBACK_URL = env("ESI_SSO_CALLBACK_URL")

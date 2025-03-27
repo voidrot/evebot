@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "evebot.fullname" . }}-app
+  name: {{ include "evebot.fullname" . }}-celery-flower
   labels:
     {{- include "evebot.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.flowerReplicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -22,7 +22,7 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        evebot-app: app
+        evebot-app: flower
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -34,29 +34,21 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: "celery-flower"
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["server"]
+          args: ["flower"]
           envFrom:
             - secretRef:
                 name: evebot
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 5555
               protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
