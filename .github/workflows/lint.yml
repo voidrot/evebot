@@ -1,0 +1,35 @@
+name: Run Linters
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+          cache: 'pip'
+
+      - name: Install python packages
+        run: pip install djlint django-upgrade
+
+      - name: Run ruff
+        uses: astral-sh/ruff-action@v3.2.2
+
+      - name: Run django-upgrade
+        run: django-upgrade --target-version 5.2
+
+      - name: Run djlint --lint
+        run: djlint . --lint
+
+      - name: Run djlint --check
+        run: djlint . --check
