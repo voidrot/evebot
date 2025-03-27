@@ -29,7 +29,7 @@ fi
 PROCESS_TYPE=$1
 
 if [ "$PROCESS_TYPE" == "server" ]; then
-  if [ -n "$DJANGO_DEBUG" ]; then
+  if [ -z "$DJANGO_DEBUG" ]; then
     start_dev_server
   else
     start_prod_server
